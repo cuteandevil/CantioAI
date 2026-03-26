@@ -1,0 +1,16 @@
+experiment:
+  name: test_experiment
+  seed: 42
+hyperparameter_search:
+  direction: minimize
+  enabled: false
+  method: optuna
+  n_trials: 2
+  pruner: MedianPruner
+  sampler: TPESampler
+  storage: sqlite:///test_study.db
+  study_name: test_study
+  timeout: 60
+training:
+  learning_rate:
+    generator: 0.001

@@ -1,0 +1,54 @@
+# =============================
+# HuBERT Configuration
+# =============================
+hubert:
+  enabled: false
+  mode: "hybrid"  # hubert_only, phoneme_only, hybrid
+
+  # Model configuration
+  model:
+    type: "hubert-base"  # hubert-base, hubert-large, xlsr-53
+    checkpoint: null  # Custom checkpoint path
+    device: "cuda"  # Feature extraction device
+
+  # Feature extraction configuration
+  extraction:
+    mode: "offline"  # offline, online, streaming
+    sample_rate: 16000  # HuBERT input sampling rate
+    layer_index: 12  # Using which layer features, or [6,7,8,9,10,11,12]
+    use_all_layers: false
+    normalize: true
+    cache_dir: "./data/hubert_features"
+
+  # Feature processing configuration
+  processing:
+    target_dim: 256  # Projection target dimension
+    alignment_method: "dtw"  # linear, dtw, attention
+    normalize_features: true
+    apply_pca: false
+    pca_components: 128
+
+  # Fusion configuration
+  fusion:
+    enabled: true
+    strategy: "gated"  # concat, gated, cross_attention, hierarchical
+    gated_temperature: 0.1
+    cross_attention_heads: 8
+    fusion_layers: [3, 6, 9]  # Layer-wise fusion layers
+
+  # Fine-tuning configuration
+  finetune:
+    enabled: false
+    strategy: "task_specific"  # task_specific, multi_task, contrastive
+    freeze_layers: [0, 1, 2, 3, 4, 5]  # Frozen layers
+    learning_rate: 1e-5
+    weight_decay: 0.01
+
+  # Streaming configuration
+  streaming:
+    enabled: false
+    chunk_size: 16000  # 1 second audio
+    overlap: 0.1
+    causal: true
+    use_cache: true
+    cache_size: 10

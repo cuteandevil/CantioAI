@@ -1,0 +1,23 @@
+# Multitask Learning Configuration
+# References existing Stage 3 configuration
+
+# Multitask learning settings
+enabled: true
+task_types:
+  - "source_filter_prediction"  # F0, SP, AP prediction
+  - "speaker_embedding"         # Speaker representation learning
+  - "language_modeling"         # Phone/phoneme sequence modeling
+  - "prosody_modeling"          # Rhythm, stress, intonation
+
+# Task weighting strategy
+task_weighting: "dynamic"  # static, dynamic, uncertainty_based
+
+# Shared vs specific components
+shared_encoder: True
+task_specific_heads: True
+
+# Reference to existing multitask configs
+reference_configs:
+  base: "configs/"
+  dataloader: "src/dataloader/"
+  training_strategies: "src/multitask/training_strategies.py"

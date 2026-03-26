@@ -1,0 +1,88 @@
+experiment:
+  name: "cantioai_adversarial_v1"
+  description: "CantioAI混合架构对抗训练实验"
+  tags: ["adversarial", "hybrid", "singing", "svc"]
+  seed: 42
+
+model:
+  base_model: "checkpoints/cantioai_base.pt"
+  use_hifigan: true
+  hifigan_checkpoint: "checkpoints/hifigan_pretrained.pt"
+
+training_mode: "adversarial"  # 可选: "base", "adversarial", "mixed"
+phase_strategy: "progressive"  # 渐进式训练
+
+# 判别器配置
+discriminators:
+  enabled: true
+  types: ["mpd", "msd", "source_filter", "control_consistency"]
+  weights:
+    mpd: 1.0
+    msd: 0.8
+    source_filter: 0.5
+    control_consistency: 0.3
+
+# 损失配置
+losses:
+  adversarial:
+    enabled: true
+    type: "hinge"  # hinge, lsgan, wgan-gp
+    weights:
+      generator: 1.0
+      discriminator: 1.0
+
+  feature_matching:
+    enabled: true
+    layers: ["all"]  # 使用所有层的特征
+    distance_metric: "l1"
+    weights: [1.0, 0.8, 0.6, 0.4, 0.2]
+
+  consistency:
+    enabled: true
+    metrics: ["spectral", "pitch", "voiced_unvoiced", "temporal"]
+    weights:
+      spectral: 0.3
+      pitch: 0.4
+      voiced_unvoiced: 0.2
+      temporal: 0.1
+
+# 训练优化
+optimization:
+  use_amp: true           # 自动混合精度
+  gradient_accumulation: 4
+  gradient_clip: 1.0
+  gradient_penalty: 10.0
+  r1_regularization: 10.0
+
+# 早停机制
+early_stopping:
+  enabled: false          # 是否启用早停
+  patience: 10            # 耐心值：连续多少个epoch验证损失没有改善后停止
+  min_delta: 0.0          # 最小改善阈值：验证损失改善小于此值时不算作改善
+
+# 日志记录
+logging:
+  use_wandb: true
+  wandb_project: "cantioai"
+  use_tensorboard: true
+  log_interval: 100
+  save_checkpoint_interval: 1000
+  eval_interval: 500
+
+# 分布式训练配置
+distributed:
+  enabled: false  # 是否启用分布式训练
+  backend: "nccl"  # 后端，如 "nccl", "gloo"
+  init_method: "env://"  # 初始化方法，通常使用环境变量
+
+# 超参数搜索配置
+hyperparameter_search:
+  enabled: false  # 是否启用超参数搜索
+  method: "optuna"  # 超参数搜索方法: "optuna", "ray", "grid"
+  study_name: "cantioai_hyperparameter_search"  # 研究名称
+  storage: "sqlite:///optuna_study.db"  # 存储URL (对于Optuna)
+  n_trials: 100  # 试验次数
+  timeout: 3600  # 超时时间(秒)
+  direction: "minimize"  # 优化方向: "minimize" 或 "maximize"
+  sampler: "TPESampler"  # 采样器 (Optuna): "TPESampler", "RandomSampler", etc.
+  pruner: "MedianPruner"  # 剪枝器 (Optuna): "MedianPruner", "SuccessiveHalvingPruner", etc.

@@ -1,0 +1,20 @@
+# HuBERT Feature Extraction Configuration
+# References existing Stage 5 configuration
+
+# HuBERT settings
+enabled: True
+model_name: "facebook/hubert-base-ls960"  # or local path
+feature_layer: 9  # Which transformer layer to extract features from
+feature_dim: 768
+aggregation_method: "mean"  # mean, max, attention_weighted
+
+# Feature processing
+normalize_features: True
+feature_dropout: 0.1
+
+# Integration settings
+integration_method: "cross_attention"  # concat, cross_attention, adain
+projection_dim: 256
+
+# Reference to existing HuBERT config
+reference_file: "configs/hubert.yaml"

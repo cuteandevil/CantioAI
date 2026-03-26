@@ -1,0 +1,29 @@
+adversarial:
+  enabled: true
+  type: "hinge"  # hinge, lsgan, wgan-gp
+  weight: 1.0
+  r1_regularization: 10.0
+  gradient_penalty_weight: 10.0
+  use_gradient_penalty: true
+
+feature_matching:
+  enabled: true
+  loss_type: "l1"  # l1, l2, cosine
+  normalization: "layer_norm"  # layer_norm, instance_norm, none
+  num_pyramid_levels: 3
+  layer_weights: [1.0, 0.8, 0.6, 0.4, 0.2]  # 不同层的权重
+  disc_weights:  # 不同判别器的权重
+    mpd: 1.0
+    msd: 0.8
+    source_filter: 0.5
+    control_consistency: 0.3
+  weight: 1.0
+
+consistency:
+  enabled: true
+  loss_type: "l1"  # l1, l2
+  spectral_weight: 0.3
+  pitch_weight: 0.4
+  voiced_unvoiced_weight: 0.2
+  temporal_dynamics_weight: 0.1
+  weight: 1.0

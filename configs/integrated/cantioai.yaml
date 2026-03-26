@@ -1,0 +1,237 @@
+# configs/integrated/cantioai.yaml
+# Unified configuration for CantioAI Complete System
+# Integrates all 9 stages: Base Architecture through Final Integration
+
+version: "1.0.0"
+system:
+  mode: "production"  # development, production, edge, testing
+  log_level: "INFO"
+  device: "auto"  # auto, cpu, cuda:0, cuda:1, etc.
+  seed: 42
+  precision: "fp32"  # fp32, fp16, bf16, int8
+
+# =============================================
+# CORE ARCHITECTURE SETTINGS
+# =============================================
+model:
+  # 基础架构选择
+  architecture: "hybrid"  # hybrid, transformer_only, cnn_lstm, etc
+  use_hubert: true
+  use_diffusion: true
+  use_multitask: true
+  use_adversarial: true
+
+  # 各阶段配置引用 - Reference to individual stage configs
+  hybrid_config: "configs/integrated/hybrid.yaml"
+  adversarial_config: "configs/integrated/adversarial.yaml"
+  multitask_config: "configs/integrated/multitask.yaml"
+  transformer_config: "configs/integrated/transformer.yaml"
+  hubert_config: "configs/integrated/hubert.yaml"
+  diffusion_config: "configs/integrated/diffusion.yaml"
+  optimization_config: "configs/integrated/optimization.yaml"
+
+# =============================================
+# TRAINING CONFIGURATION
+# =============================================
+training:
+  enabled: true
+  strategy: "progressive"  # basic, progressive, curriculum, adversarial_first
+  use_adversarial: true
+  use_multitask: true
+  use_knowledge_distillation: false
+
+  # Progressive training stages
+  stages:
+    - name: "foundation"
+      epochs: 20
+      focus: "reconstruction"
+      loss_weights:
+        sp_loss_weight: 1.0
+        f0_loss_weight: 0.1
+
+    - name: "enhancement"
+      epochs: 30
+      focus: "quality"
+      loss_weights:
+        sp_loss_weight: 1.0
+        f0_loss_weight: 0.1
+        adv_loss_weight: 0.1
+
+    - name: "optimization"
+      epochs: 20
+      focus: "robustness"
+      loss_weights:
+        sp_loss_weight: 1.0
+        f0_loss_weight: 0.1
+        adv_loss_weight: 0.15
+        feature_matching_weight: 0.1
+
+# =============================================
+# INFERENCE CONFIGURATION
+# =============================================
+inference:
+  mode: "realtime"  # offline, realtime, streaming, batch
+  target_latency: 30.0  # Target latency in milliseconds
+  quality_preset: "balanced"  # speed, balanced, quality, max_quality
+
+  # Optimization levels for different use cases
+  optimization_levels:
+    speed: "minimal"
+    balanced: "balanced"
+    quality: "aggressive"
+    max_quality: "extreme"
+
+# =============================================
+# WEB UI CONFIGURATION
+# =============================================
+webui:
+  enabled: true
+  host: "0.0.0.0"
+  port: 7860
+  title: "CantioAI Voice Conversion System"
+  theme: "dark"  # dark, light, auto
+  language: "zh-CN"  # zh-CN, en-US, etc
+  authentication: false  # Set to true for production with auth
+
+  # File handling
+  max_file_size_mb: 100
+  allowed_extensions: [".wav", ".mp3", ".flac", ".m4a", ".ogg"]
+  uploads_per_request: 10
+
+  # Processing limits
+  max_concurrent_processing: 4
+  max_queue_size: 100
+  result_retention_days: 30
+
+# =============================================
+# DEPLOYMENT CONFIGURATION
+# =============================================
+deployment:
+  platform: "docker"  # docker, kubernetes, cloud, edge
+
+  # Resource limits
+  resources:
+    cpu_limit: "4"
+    memory_limit: "8G"
+    gpu_count: 1
+    gpu_memory_limit: "6G"
+
+  # Scaling (for Kubernetes/cloud)
+  autoscaling:
+    enabled: true
+    min_replicas: 1
+    max_replicas: 10
+    target_cpu_utilization: 70
+
+  # Health checks
+  health_check:
+    interval_seconds: 30
+    timeout_seconds: 10
+    failure_threshold: 3
+    success_threshold: 1
+
+# =============================================
+# STORAGE CONFIGURATION
+# =============================================
+storage:
+  # Model storage
+  models:
+    local_path: "./models"
+    huggingface_repo: ""  # Optional HF hub repo
+    versioning_enabled: true
+    max_versions_keep: 10
+
+  # Data storage
+  data:
+    raw_path: "./data/raw"
+    processed_path: "./data/processed"
+    cache_enabled: true
+    cache_path: "./data/cache"
+
+  # Results storage
+  results:
+    path: "./results"
+    retain_days: 30
+    compression_enabled: true
+
+  # Logs storage
+  logs:
+    path: "./logs"
+    retain_days: 7
+    rotation_enabled: true
+    max_size_mb: 100
+
+# =============================================
+# MONITORING & TELEMETRY
+# =============================================
+monitoring:
+  enabled: true
+
+  # Metrics collection
+  metrics:
+    enabled: true
+    collection_interval_seconds: 15
+    retention_hours: 24
+
+  # Health checks
+  health:
+    enabled: true
+    check_interval_seconds: 30
+
+  # Alerting
+  alerts:
+    enabled: true
+    channels: ["log"]  # log, email, slack, webhook
+
+  # Performance profiling
+  profiling:
+    enabled: False  # Enable for debugging
+    sample_rate: 0.1  # 10% of requests
+
+# =============================================
+# SECURITY SETTINGS
+# =============================================
+security:
+  # Authentication
+  auth:
+    enabled: false  # Enable for production
+    provider: "none"  # none, oauth2, jwt, ldap
+
+  # Authorization
+  rbac:
+    enabled: false
+    roles: ["admin", "user", "viewer"]
+
+  # Data protection
+  encryption:
+    enabled: false  # Enable for sensitive data
+    at_rest: False
+    in_transit: True  # HTTPS/TLS
+
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: 120
+    burst_limit: 20
+
+  # Input validation
+  validation:
+    enabled: True
+    max_filename_length: 255
+    sanitize_inputs: True
+
+# =============================================
+# EXPERIMENTAL & DEBUG SETTINGS
+# =============================================
+experimental:
+  # Feature flags
+  enable_new_features: False
+  use_torch_compile: False  # PyTorch 2.0+
+  use_deepspeed: False
+
+  # Debug options
+  debug:
+    verbose_logging: False
+    save_intermediates: False
+    benchmark_mode: False
+    profile_memory: False

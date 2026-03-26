@@ -1,0 +1,64 @@
+mpd:
+  enabled: true
+  periods: [2, 3, 5, 7, 11]
+  control_injection: true
+  control_dim: 64
+  spectral_norm: true
+  leaky_relu_slope: 0.2
+  kernel_sizes: [5, 3]
+  channels: [32, 64, 128, 256, 512]
+
+msd:
+  enabled: true
+  scales: [1, 2, 4]
+  control_injection: true
+  control_dim: 64
+  spectral_norm: true
+  kernel_sizes: [15, 41, 41, 41]
+  channels: [16, 32, 64, 128, 256]
+
+source_filter_disc:
+  enabled: true
+  f0_encoder:
+    layers: 3
+    channels: [32, 64, 128]
+    kernel_size: 5
+
+  sp_encoder:
+    layers: 4
+    channels: [128, 256, 512, 512]
+    kernel_size: 5
+
+  ap_encoder:
+    layers: 2
+    channels: [16, 32]
+    kernel_size: 5
+
+  interaction_network:
+    hidden_dim: 256
+    num_layers: 2
+
+  temporal_network:
+    hidden_dim: 128
+    num_layers: 3
+    bidirectional: true
+
+control_consistency_disc:
+  enabled: true
+  audio_encoder:
+    layers: 3
+    channels: [128, 256, 512]
+
+  control_encoder:
+    f0_dim: 1
+    sp_dim: 60
+    ap_dim: 1
+    output_dim: 256
+
+  cross_modal_attention:
+    num_heads: 8
+    dropout: 0.1
+
+  multi_scale_consistency:
+    scales: [1, 2, 4]
+    feature_dim: 256

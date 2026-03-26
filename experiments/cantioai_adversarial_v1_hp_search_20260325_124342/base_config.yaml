@@ -1,0 +1,84 @@
+discriminators:
+  enabled: true
+  types:
+  - mpd
+  - msd
+  - source_filter
+  - control_consistency
+  weights:
+    control_consistency: 0.3
+    mpd: 1.0
+    msd: 0.8
+    source_filter: 0.5
+distributed:
+  backend: nccl
+  enabled: false
+  init_method: env://
+experiment:
+  description: "CantioAI\u6DF7\u5408\u67B6\u6784\u5BF9\u6297\u8BAD\u7EC3\u5B9E\u9A8C"
+  name: cantioai_adversarial_v1
+  seed: 42
+  tags:
+  - adversarial
+  - hybrid
+  - singing
+  - svc
+hyperparameter_search:
+  direction: minimize
+  enabled: false
+  method: optuna
+  n_trials: 100
+  pruner: MedianPruner
+  sampler: TPESampler
+  storage: sqlite:///optuna_study.db
+  study_name: cantioai_hyperparameter_search
+  timeout: 3600
+logging:
+  eval_interval: 500
+  log_interval: 100
+  save_checkpoint_interval: 1000
+  use_tensorboard: true
+  use_wandb: true
+  wandb_project: cantioai
+losses:
+  adversarial:
+    enabled: true
+    type: hinge
+    weights:
+      discriminator: 1.0
+      generator: 1.0
+  consistency:
+    enabled: true
+    metrics:
+    - spectral
+    - pitch
+    - voiced_unvoiced
+    - temporal
+    weights:
+      pitch: 0.4
+      spectral: 0.3
+      temporal: 0.1
+      voiced_unvoiced: 0.2
+  feature_matching:
+    distance_metric: l1
+    enabled: true
+    layers:
+    - all
+    weights:
+    - 1.0
+    - 0.8
+    - 0.6
+    - 0.4
+    - 0.2
+model:
+  base_model: checkpoints/cantioai_base.pt
+  hifigan_checkpoint: checkpoints/hifigan_pretrained.pt
+  use_hifigan: true
+optimization:
+  gradient_accumulation: 4
+  gradient_clip: 1.0
+  gradient_penalty: 10.0
+  r1_regularization: 10.0
+  use_amp: true
+phase_strategy: progressive
+training_mode: adversarial

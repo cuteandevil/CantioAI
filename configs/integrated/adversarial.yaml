@@ -1,0 +1,29 @@
+# Adversarial Training Configuration
+# References existing Stage 2 configuration
+
+# Adversarial training settings
+enabled: true
+loss_type: "lsgan"  # lsgan, vanilla, wgan
+gradient_penalty: False
+
+# Discriminator settings
+discriminator_types:
+  - "mpd"  # Multi-Period Discriminator
+  - "msd"  # Multi-Scale Discriminator
+  - "hybrid"  # Hybrid Discriminator System
+
+# Training ratios
+generator_steps: 1
+discriminator_steps: 1
+
+# Loss weights
+adversarial_loss_weight: 0.1
+feature_matching_weight: 0.1
+consistency_loss_weight: 0.1
+
+# Reference to existing adversarial configs
+reference_configs:
+  mpd: "configs/adversarial/"
+  msd: "configs/adversarial/"
+  hub_discriminator: "configs/adversarial/"
+  losses: "configs/adversarial/losses/"

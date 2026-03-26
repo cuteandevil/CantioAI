@@ -1,0 +1,23 @@
+# Hybrid Architecture Configuration
+# References existing Stage 1 & 4 configurations
+
+# Base hybrid source-filter architecture
+base_architecture: "hybrid_source_filter"
+
+# Reference to existing configurations
+existing_configs:
+  hybrid_svc: "config.yaml"  # Main config contains hybrid settings
+  transformer: "config.yaml"  # Transformer settings in main config
+  hubert: "configs/hubert.yaml"
+  diffusion: "config.yaml"  # Diffusion settings in main config
+
+# Model parameters (will be overridden by existing configs)
+model_type: "HybridSVC"
+use_source_filter: True
+use_neural_vocoder: True
+vocoder_type: "neural"  # neural, world, hybrid
+
+# Architecture specifics
+encoder_type: "hybrid"  # hybrid, transformer, cnn_lstm
+decoder_type: "neural_vocoder"
+fusion_strategy: "adaptive"  # adaptive, fixed, learned

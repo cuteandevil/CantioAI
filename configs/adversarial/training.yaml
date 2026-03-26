@@ -1,0 +1,68 @@
+# 训练参数
+batch_size: 16
+learning_rate:
+  generator: 0.0001
+  discriminator: 0.0001
+  scheduler:
+    generator:
+      type: "StepLR"  # StepLR, ExponentialLR, CosineAnnealingLR
+      step_size: 50
+      gamma: 0.5
+    discriminator:
+      type: "StepLR"
+      step_size: 50
+      gamma: 0.5
+
+# 训练策略
+training_phase: "progressive"  # progressive, joint, staged
+progressive_stages:
+  - name: "warmup"
+    epochs: 10
+    focus: "generator_only"  # generator_only, discriminator_balanced, discriminator_heavy
+    loss_weights:
+      adversarial_generator: 1.0
+      adversarial_discriminator: 0.0
+      feature_matching: 0.1
+      consistency: 0.1
+  - name: "adversarial_balance"
+    epochs: 30
+    focus: "discriminator_balanced"
+    loss_weights:
+      adversarial_generator: 1.0
+      adversarial_discriminator: 1.0
+      feature_matching: 1.0
+      consistency: 0.5
+  - name: "feature_focus"
+    epochs: 20
+    focus: "feature_matching"
+    loss_weights:
+      adversarial_generator: 1.0
+      adversarial_discriminator: 1.0
+      feature_matching: 2.0
+      consistency: 1.0
+  - name: "consistency_focus"
+    epochs: 20
+    focus: "consistency"
+    loss_weights:
+      adversarial_generator: 1.0
+      adversarial_discriminator: 1.0
+      feature_matching: 1.0
+      consistency: 2.0
+
+# 高级训练技巧
+advanced:
+  label_smoothing: 0.1
+  two_time_scale_update_rule: true  # TTUR
+  discriminator_iterations: 1  # 每个生成器迭代对应的判别器迭代数
+  gradient_penalty: 10.0
+  r1_regularization: 10.0
+  perceptual_loss_weight: 0.1
+
+# 验证和测试
+validation:
+  interval: 5  # 每多少个epoch验证一次
+  metrics: ["loss", "mel_loss", "feature_matching_loss"]
+
+test:
+  interval: 10  # 每多少个epoch测试一次
+  metrics: ["loss", "mel_loss", "feature_matching_loss", "pesq", "stoi"]

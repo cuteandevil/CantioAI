@@ -1,0 +1,46 @@
+# configs/webui/webui.yaml
+webui:
+  enabled: true
+  mode: "development"  # development, production
+
+  # 服务器配置
+  server:
+    host: "0.0.0.0"
+    port: 7860
+    workers: 4
+    timeout: 300
+
+  # 前端配置
+  frontend:
+    title: "CantioAI Web Interface"
+    theme: "dark"  # dark, light, auto
+    language: "zh-CN"  # 多语言支持
+
+  # 文件处理配置
+  files:
+    upload_dir: "./uploads"
+    max_file_size: "100MB"
+    allowed_extensions: [".wav", ".mp3", ".flac", ".m4a"]
+    keep_original: true
+
+  # 处理配置
+  processing:
+    max_concurrent: 2
+    timeout: 300
+    chunk_size: 1024
+    use_cache: true
+
+  # 实时处理配置
+  realtime:
+    enabled: true
+    sample_rate: 24000
+    chunk_ms: 50
+    buffer_size: 5
+    latency_target: 100  # 目标延迟(ms)
+
+  # 安全配置
+  security:
+    enable_auth: false
+    enable_https: false
+    cors_origins: ["*"]
+    rate_limit: 100  # 每分钟请求数

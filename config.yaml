@@ -1,0 +1,201 @@
+"""
+CantioAI Configuration File
+Updated to use Transformer-based Hybrid Spectral Predictor by default
+All parameters are configurable via this YAML file
+"""
+# =============================
+# Data Paths
+# =============================
+data:
+  raw_dir: data/raw/
+  processed_dir: data/processed/
+  datasets_dir: data/datasets/
+  # Dataset names (for processed data)
+  train_dataset: train_features.npz
+  val_dataset: val_features.npz
+  test_dataset: test_features.npz
+  # Supported audio formats
+  audio_extensions: [".wav", ".flac", ".mp3"]
+  # =============================
+  # Feature Extraction Parameters
+  # =============================
+feature:
+  # WORLD analysis parameters
+  frame_period: 5.0  # ms (frame shift)
+  fft_size: 1024
+  # F0 extraction (WORLD)
+  f0_floor: 71.0     # Hz (minimum F0)
+  f0_ceil: 800.0     # Hz (maximum F0)
+  # Spectral envelope (WORLD)
+  num_mcep: 60       # Mel-cepstral coefficients dimension
+  mcep_alpha: 0.41   # All-pass constant
+  # Normalization
+  normalize_features: true
+  f0_norm_method: "log"  # Options: "log", "standard", "minmax"
+  sp_norm_method: "standard"  # Options: "standard", "minmax"
+  # Post-processing
+  silence_threshold: 0.03  # Amplitude threshold for silence detection
+  f0_interpolation: "linear"  # Options: "linear", "none"
+  # =============================
+  # Model Hyperparameters
+  # =============================
+model:
+  # HybridSpectralPredictor - Updated to use Transformer-based backbone
+  phoneme_feature_dim: 32      # D_ph - phoneme feature dimension
+  spectral_envelope_dim: 60    # D_sp - output spectral envelope dimension
+  speaker_embed_dim: 128       # D_spk - speaker embedding dimension
+  n_speakers: 100              # Total number of speakers
+  # Convolutional layers (removed for Transformer)
+  # LSTM layers (removed for Transformer)
+  # Fully-connected layers (kept for final prediction)
+  fc_hidden: 256
+  # Dropout
+  dropout: 0.1
+  # Pitch Quantizer (optional)
+  use_pitch_quantizer: true
+  pitch_quantizer:
+    ref_freq: 440.0    # A4 reference frequency
+  ref_midi: 69       # MIDI note for A4
+  octaves: 10        # Octave range to cover
+  use_ste: true      # Use straight-through estimator
+  # =============================
+  # Training Parameters
+  # =============================
+training:
+  batch_size: 16
+  learning_rate: 0.001
+  weight_decay: 1e-5
+  epochs: 100
+  validation_interval: 1  # Validate every N epochs
+  save_interval: 10       # Save checkpoint every N epochs
+  # Optimizer
+  optimizer: "adam"       # Options: "adam", "adamw", "sgd"
+  # Learning Rate Scheduler
+  lr_scheduler: "step"    # Options: "step", "cosine", "plateau", "none"
+  lr_step_size: 30        # For StepLR
+  lr_gamma: 0.1           # For StepLR
+  # Gradient Clipping
+  grad_clip: 1.0          # Max norm for gradient clipping (None to disable)
+  # Mixed Precision
+  use_amp: false          # Automatic Mixed Precision
+  # Device
+  device: "auto"          # Options: "auto", "cpu", "cuda", "cuda:0", etc.
+  # Seed for reproducibility
+  seed: 42
+  # =============================
+  # Loss Function Weights
+  # =============================
+loss:
+  # Spectral envelope loss
+  sp_loss_weight: 1.0
+  sp_loss_type: "l1"      # Options: "l1", "l2", "huber"
+  # F0 loss (if using pitch quantizer)
+  f0_loss_weight: 0.1
+  f0_loss_type: "l1"
+  # Adversarial loss (for future extension)
+  adv_loss_weight: 0.0
+  # Huber loss delta (if used)
+  huber_delta: 1.0
+  # =============================
+  # Experiment Settings
+  # =============================
+experiment:
+  name: "cantioai_base"
+  description: "Baseline hybrid source-filter + neural vocoder"
+  # Logging
+  log_interval: 100       # Log training stats every N batches
+  use_tensorboard: true
+  tensorboard_dir: "logs/tensorboard"
+  # Model checkpointing
+  checkpoint_dir: "checkpoints"
+  resume_from: ""         # Path to checkpoint to resume from
+  # Validation
+  val_split: 0.1          # Fraction of training data for validation
+  # Testing
+  test_batch_size: 32
+  # =============================
+  # Inference Settings
+  # =============================
+inference:
+  # Audio synthesis
+  synthesize_batch_size: 4
+  # WORLD synthesis parameters
+  synth_frame_period: 5.0  # ms
+  # Post-processing
+  apply_preemphasis: true
+  preemphasis_coeff: 0.97
+  normalize_output: true
+  # Output
+  output_dir: "results/"
+  output_format: "wav"    # Options: "wav", "flac"
+# =============================
+# Transformer Configuration (Updated for backbone replacement)
+# =============================
+transformer:
+  # Transformer encoder configuration for replacing CNN+BiLSTM
+  type: "hierarchical"         # Using hierarchical Transformer for better multi-scale processing
+  hidden_dim: 512
+  num_heads: 8
+  num_layers: 6
+  ff_dim: 2048
+  dropout: 0.1
+  max_seq_len: 5000
+  positional_encoding:
+    type: "relative_bias"     # Using relative positional encoding
+  hierarchical:
+    local_window: 32
+    medium_window: 128
+    global_window: "full"
+    downsampling_factors: [2, 4]
+  streaming:
+    causal: true
+
+# =============================
+# Diffusion Model Configuration
+# =============================
+diffusion:
+  enabled: true
+  mode: "postprocess"  # postprocess, joint, direct
+
+  # 扩散过程配置
+  process:
+    type: "waveform"  # waveform, mel, spec
+    scheduler: "cosine"  # linear, cosine, sqrt
+    timesteps: 1000
+    beta_start: 0.0001
+    beta_end: 0.02
+
+  # 去噪网络配置
+  denoiser:
+    type: "diffwave"  # diffwave, wavenet, unet
+    hidden_dim: 128
+    num_layers: 30
+    num_cycles: 10
+    condition_projection: true
+
+  # 条件注入配置
+  conditioning:
+    f0_method: "cross_attention"  # cross_attention, adain, concat
+    sp_method: "adain"
+    ap_method: "concat"
+    hubert_method: "cross_attention"
+
+  # 训练配置
+  training:
+    strategy: "two_stage"  # two_stage, joint
+    loss_type: "simple"  # simple, v, spec
+    learning_rate: 1e-4
+    weight_decay: 0.0
+
+  # 采样配置
+  sampling:
+    sampler: "ddim"  # ddim, dpm, plms
+    steps: 50
+    guidance_scale: 3.0
+    temperature: 1.0
+
+  # 效率配置
+  efficiency:
+    use_checkpoint: true
+    gradient_accumulation: 1
+    mixed_precision: true

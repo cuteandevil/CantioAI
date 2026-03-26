@@ -1,0 +1,51 @@
+# Diffusion Model Enhancement Configuration
+# References existing Stage 6 configuration
+
+# Diffusion model settings
+enabled: True
+mode: "postprocess"  # postprocess, joint, direct, latent
+
+# Diffusion process
+process:
+  type: "waveform"  # waveform, mel, spec
+  scheduler: "cosine"  # linear, cosine, sqrt
+  timesteps: 1000
+  beta_start: 0.0001
+  beta_end: 0.02
+
+# Denoising network
+denoiser:
+  type: "diffwave"  # diffwave, wavenet, unet
+  hidden_dim: 128
+  num_layers: 30
+  num_cycles: 10
+
+# Conditioning
+conditioning:
+  f0_method: "cross_attention"  # cross_attention, adain, concat
+  sp_method: "adain"
+  ap_method: "concat"
+  hubert_method: "cross_attention"
+
+# Training
+training:
+  strategy: "two_stage"  # two_stage, joint
+  loss_type: "simple"  # simple, v, spec
+  learning_rate: 1e-4
+  weight_decay: 0.0
+
+# Sampling
+sampling:
+  sampler: "ddim"  # ddim, dpm, plms
+  steps: 50
+  guidance_scale: 3.0
+  temperature: 1.0
+
+# Efficiency
+efficiency:
+  use_checkpoint: True
+  gradient_accumulation: 1
+  mixed_precision: True
+
+# Reference to existing diffusion configs in main config
+reference_section: "diffusion"

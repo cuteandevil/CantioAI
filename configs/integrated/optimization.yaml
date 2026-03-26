@@ -1,0 +1,17 @@
+# Real-time Inference Optimization Configuration
+# References existing Stage 7 configuration
+
+# Reference the existing optimization config
+reference_file: "configs/optimization/realtime.yaml"
+
+# Override or extend specific settings for integrated system
+overrides:
+  # System-wide optimization preferences
+  optimization_level: "balanced"  # Will be overridden by inference.quality_preset mapping
+
+  # Target latency mapping
+  latency_targets:
+    speed: 10.0   # milliseconds
+    balanced: 30.0
+    quality: 50.0
+    max_quality: 100.0

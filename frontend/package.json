@@ -1,0 +1,29 @@
+{
+  "name": "cantioai-webui",
+  "version": "1.0.0",
+  "description": "Web interface for CantioAI voice conversion system",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "antd": "^5.0.0",
+    "wavesurfer.js": "^7.0.0",
+    "axios": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^4.9.0",
+    "vite": "^4.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.2.0"
+  }
+}

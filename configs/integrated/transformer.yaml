@@ -1,0 +1,31 @@
+# Transformer Backbone Configuration
+# References existing Stage 4 configuration
+
+# Transformer architecture settings
+type: "hierarchical"  # hierarchical, standard, linear, performer
+hidden_dim: 512
+num_heads: 8
+num_layers: 6
+ff_dim: 2048
+dropout: 0.1
+max_seq_len: 5000
+
+# Positional encoding
+positional_encoding:
+  type: "relative_bias"  # absolute, relative, rotary
+
+# Hierarchical transformer specifics
+hierarchical:
+  local_window: 32
+  medium_window: 128
+  global_window: "full"
+  downsampling_factors: [2, 4]
+
+# Streaming settings
+streaming:
+  causal: True
+  chunk_size: 512
+  overlap: 128
+
+# Reference to existing transformer configs in main config
+reference_section: "transformer"

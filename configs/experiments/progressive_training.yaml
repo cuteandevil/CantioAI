@@ -1,0 +1,43 @@
+# 渐进式训练实验配置
+experiment:
+  name: "cantioai_progressive_training"
+  description: "渐进式对抗训练实验"
+  tags: ["progressive", "adversarial", "training"]
+  seed: 42
+
+# 继承基础配置并覆盖特定参数
+# 此配置应与base.yaml、discriminators.yaml、losses.yaml一起使用
+training:
+  progressive_stages:
+    - name: "warmup"
+      epochs: 15
+      focus: "generator_only"
+      loss_weights:
+        adversarial_generator: 1.0
+        adversarial_discriminator: 0.0
+        feature_matching: 0.5
+        consistency: 0.5
+    - name: "adversarial_intro"
+      epochs: 20
+      focus: "discriminator_balanced"
+      loss_weights:
+        adversarial_generator: 1.0
+        adversarial_discriminator: 0.5
+        feature_matching: 1.0
+        consistency: 0.5
+    - name: "full_adversarial"
+      epochs: 30
+      focus: "joint_training"
+      loss_weights:
+        adversarial_generator: 1.0
+        adversarial_discriminator: 1.0
+        feature_matching: 1.5
+        consistency: 1.0
+    - name: "fine_tuning"
+      epochs: 15
+      focus: "generator_enhancement"
+      loss_weights:
+        adversarial_generator: 1.0
+        adversarial_discriminator: 1.0
+        feature_matching: 2.0
+        consistency: 1.5
