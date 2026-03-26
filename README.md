@@ -57,11 +57,11 @@ cantioai/
 
 ## Key Features
 
-- **System-Level Reliability**: 工作级错误处理、优雅关机机制和故障隔离
-- **Enhanced Observability**: 实时健康监控、性能指标收集和阈值告警
-- **Simplified Maintainability**: 统一配置管理、清晰的分层架构和一致的开发者约定
-- **Flexible Deployment**: 4种启动模式（完整系统、仅后端、仅前端、全栈）支持从开发到生产的完整生命周期
-- **Production Readiness**: Windows 兼容性、详细日志和系统就绪检查
+- **System-Level Reliability**: Production-grade error handling, graceful shutdown mechanisms, and fault isolation
+- **Enhanced Observability**: Real-time health monitoring, performance metrics collection, and threshold-based alerting
+- **Simplified Maintainability**: Unified configuration management, clear layered architecture, and consistent developer conventions
+- **Flexible Deployment**: 4 startup modes (full system, backend-only, frontend-only, full-stack) supporting complete lifecycle from development to production
+- **Production Readiness**: Windows compatibility, detailed logging, and system readiness checks
 
 ## Installation
 
@@ -75,12 +75,12 @@ See `scripts/train.py` for training and `scripts/infer.py` for inference.
 
 ## Key Features of Stage 9 Implementation
 
-- **统一配置系统**: 单一事实来源，支持跨阶段引用解析
-- **分层初始化**：10阶段明确初始化顺序，正确的依赖管理
-- **健康监控**：实时指标收集、阈值告警、系统健康评估
-- **灵活部署**：4种启动模式（完整系统、仅后端、仅前端、全栈）
-- **生产就绪**：Windows 兼容性、错误处理、优雅关机
-- **完全集成**：所有 8 个前序阶段统一为一个系统
+- **Unified Configuration System**: Single source of truth with cross-stage reference resolution support
+- **Layered Initialization**: 10-stage explicit initialization order with proper dependency management
+- **Health Monitoring**: Real-time metrics collection, threshold-based alerting, and system health assessment
+- **Flexible Deployment**: 4 startup modes (full system, backend-only, frontend-only, full-stack)
+- **Production Ready**: Windows compatibility, error handling, and graceful shutdown
+- **Fully Integrated**: All 8 preceding stages unified into a single system
 
 ## License
 
