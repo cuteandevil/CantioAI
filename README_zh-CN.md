@@ -107,6 +107,3 @@ pip install -e .
 ## 许可证
 Apache License 2.0
 ```
-
-## 致谢
-基于 [HybridSpectralPredictor](https://github.com/yourusername/HybridSpectralPredictor) 和 [DifferentiablePitchQuantizer](https://github.com/yourusername/DifferentiablePitchQuantizer) 实现构建。

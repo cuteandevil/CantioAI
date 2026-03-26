@@ -86,6 +86,4 @@ See `scripts/train.py` for training and `scripts/infer.py` for inference.
 
 Apache License 2.0
 
-## Acknowledgments
-
-Built upon [HybridSpectralPredictor](https://github.com/yourusername/HybridSpectralPredictor) and [DifferentiablePitchQuantizer](https://github.com/yourusername/DifferentiablePitchQuantizer) implementations.
+.
